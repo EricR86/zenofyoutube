@@ -11,13 +11,19 @@ yt_service = gdata.youtube.service.YouTubeService()
 
 
 def test(request):
-    data = get_video_comment_user_and_URL()
+    data = []
+
+    feed = get_most_popular_youtube_feed()
+    video_info = get_random_youtube_video_info_from_feed(feed)
+
+    data.extend(video_info[0])
+    data.extend(video_info[1])
 
     str = '\n'.join(data)
     return HttpResponse(str)
 
-def get_video_comment_user_and_URL():
-    feed = get_most_popular_youtube_feed()
+
+def get_random_youtube_video_info_from_feed(feed):
     random_video_entry = choice(feed.entry)
 
     id = get_youtube_feed_entry_id(random_video_entry)
@@ -25,10 +31,19 @@ def get_video_comment_user_and_URL():
     comment_feed = yt_service.GetYouTubeVideoCommentFeed(video_id=id)
     random_comment_entry = choice(comment_feed.entry)
 
-    return (get_comment_text_from_feed_entry(random_comment_entry),
-            get_comment_author_text_from_feed_entry(random_comment_entry),
-            get_youtube_feed_entry_url(random_video_entry),
-    )
+    video_title = get_youtube_feed_entry_title(random_video_entry)
+    video_url = get_youtube_feed_entry_url(random_video_entry)
+
+    video_info = (video_title, video_url)
+
+    comment_author = get_comment_author_text_from_feed_entry(random_comment_entry)
+    #comment_author_url = get_comment_author_url_from_feed_entry(random_comment_entry)
+    comment_content = get_comment_text_from_feed_entry(random_comment_entry)
+
+    #comment_info = (comment_author, comment_author_url, comment_content)
+    comment_info = (comment_author, comment_content)
+
+    return (video_info, comment_info)
 
 
 def get_most_popular_youtube_feed():
@@ -37,9 +52,15 @@ def get_most_popular_youtube_feed():
     feed = yt_service.GetYouTubeVideoFeed(uri)
     return feed
 
+
+def get_youtube_feed_entry_title(entry):
+    return entry.media.title.text
+
+
 def get_youtube_feed_entry_url(entry):
     base_url = "https://www.youtube.com/watch?v="
     return base_url + get_youtube_feed_entry_id(entry)
+
 
 def get_youtube_feed_entry_id(entry):
     # Get the url
@@ -56,11 +77,18 @@ def get_youtube_feed_entry_id(entry):
 
     return id
 
+
 def get_comment_text_from_feed_entry(comment_entry):
     return comment_entry.content.text
+
 
 def get_comment_author_text_from_feed_entry(comment_entry):
     return comment_entry.author[0].name.text
 
-def get_link_from_comment_entry(comment_entry):
-    return
+
+#def get_comment_author_url_from_feed_entry(comment_entry):
+#    
+#    author = get_comment_author_text_from_feed_entry(comment_entry)
+#    user_entry = yt_service.GetYouTubeUserEntry(username=author)
+#
+#    return user_entry.link[0].href # crashes sometimes
