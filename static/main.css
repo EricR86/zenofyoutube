@@ -1,0 +1,34 @@
+#container {
+    width: 100%
+}
+
+#quoteBox {
+    width: 60%;
+
+    background-image: url("images/leftquote.png");
+    background-repeat: no-repeat;
+    background-position: left 4px;
+
+    margin-top: 120px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#quoteBox blockquote {
+
+    background-image: url("images/rightquote.png");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+
+    padding: 12px 24px;
+    
+    text-align: center;
+    font-family: 'Droid Serif', serif;
+    font-size: 36pt;
+}
+
+#commentBy {
+    width: 50%;
+    margin-left: auto;
+    text-align: right;
+}
