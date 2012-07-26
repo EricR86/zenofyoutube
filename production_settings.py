@@ -1,4 +1,7 @@
-import settings
+from settings import *
+
+DEBUG = False
+TEMPLATE_DEBUG = False
 
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
