@@ -2,6 +2,11 @@
 <html>
     <head>
         <title>Youtube Insight</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="description" content="Become enlightened with the comments of the average youtube user" />
+        <meta name="keywords" content="youtube,comments,insight,zen,random,popular" >
+        
         <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.1/build/cssreset/cssreset-min.css">
         <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}main.css">
 <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400italic' rel='stylesheet' type='text/css'>
@@ -12,7 +17,16 @@
             <div id="quoteBox">
                 <blockquote>{{comment_text}}</blockquote>
                 <p id="commentBy">
-                    <span id="commentAuthor">- {{comment_author}}</span>{{comment_context}} <a href="{{video_url}}">{{video_title}}</a>
+                    - <span id="commentAuthor">{{comment_author}}</span>{{comment_context}} <a href="{{video_url}}">{{video_title}}</a>
+                </p>
+            </div>
+            <div id="about">
+                <p>
+                    All quotations are randomly selected from <a href="http://www.youtube.com">YouTube</a>'s
+                    current most popular videos.
+                </p>
+                <p>
+                    None of the comments are edited by this site.
                 </p>
             </div>
         </div>
