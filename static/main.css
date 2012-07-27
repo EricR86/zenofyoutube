@@ -44,12 +44,33 @@ a {
     width: 75%;
     margin-left: auto;
     padding-top: 12px;
+    padding-right: 12px;
 
     text-align: right;
 }
 
 #commentAuthor {
     font-weight: bold;
+}
+
+#options {
+    padding-top: 12px;
+    width: 60%;
+    margin: 0 auto;
+}
+
+#options a {
+    display: block;
+
+    padding-right: 12px;
+    
+    font-size: 10pt;
+    text-align: right;
+}
+
+#permalink { 
+    display: block;
+    padding-top: 12px;
 }
 
 #about {
