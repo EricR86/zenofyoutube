@@ -43,7 +43,7 @@ def permalink(request, video_id, comment_id):
                               context_instance=RequestContext(request))
 
 
-def page_not_found():
+def custom_404(request):
     context_dict = {}
 
     comment_info = {}

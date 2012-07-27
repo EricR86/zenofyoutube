@@ -18,4 +18,4 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 )
 
-handler404 = 'main.views.page_not_found'
+handler404 = 'main.views.custom_404'
