@@ -37,7 +37,8 @@ a {
     
     text-align: center;
     font-family: 'Droid Serif', serif;
-    font-size: 36pt;
+    font-style: italic;
+    font-size: 32pt;
 }
 
 #commentBy {
@@ -77,5 +78,11 @@ a {
     padding-top: 36px;
 
     font-size: 9pt;
+    text-align: center;
+}
+
+#social {
+    margin: auto 0;
+    padding-top: 18px;
     text-align: center;
 }
