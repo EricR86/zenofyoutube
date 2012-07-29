@@ -87,15 +87,16 @@ def get_random_youtube_video_info_from_feed(feed):
     random_video_entry = choice(feed.entry)
 
     # Get the comment feed for the video
-    comment_uri = get_video_feed_entry_comment_feed_uri(random_video_entry)
-    comment_uri = comment_uri + "?" + \
-        comment_feed_filter_parameters + "&" + \
-        comment_feed_get_parameters
+    #comment_uri = get_video_feed_entry_comment_feed_uri(random_video_entry)
+    #comment_uri = comment_uri + "?" + \
+    #    comment_feed_filter_parameters + "&" + \
+    #    comment_feed_get_parameters
 
-    comment_feed = yt_service.GetYouTubeVideoCommentFeed(uri=comment_uri)
-    #comment_feed = yt_service.GetYouTubeVideoCommentFeed(
-    #    video_id=get_video_feed_entry_id(random_video_entry)
-    #)
+    ## This crashes sometimes
+    #comment_feed = yt_service.GetYouTubeVideoCommentFeed(uri=comment_uri)
+    comment_feed = yt_service.GetYouTubeVideoCommentFeed(
+        video_id=get_video_feed_entry_id(random_video_entry)
+    )
     random_comment_entry = choice(comment_feed.entry)
 
     return get_youtube_video_info_from_entries(random_video_entry, random_comment_entry)
