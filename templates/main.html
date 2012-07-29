@@ -36,6 +36,9 @@
                 </p>
             </div>
             <div id="options">
+                {% if comment_is_response %}
+                <a id="next" href="{{comment_original_link}}">See original comment</a>
+                {% endif %}
                 <a id="next" href="/">Next</a>
             </div>
             <div id="about">

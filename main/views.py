@@ -15,7 +15,24 @@ import gdata.youtube.service
 video_feed_get_parameters = "max-results=50"
 video_feed_filter_parameters = "fields=entry(id,title,gd:comments)"
 comment_feed_get_parameters = "max-results=50"
-comment_feed_filter_parameters = "fields=entry(id,content,author)"
+comment_in_reply_to_link = "http://gdata.youtube.com/schemas/2007#in-reply-to"
+comment_feed_filter_parameters = "fields=entry(id,link,content,author)"
+
+comment_context_strings = (
+    "'s discussion on",
+    "'s insight on",
+    " discussing",
+    " on being inspired by",
+    " after carefully analyzing"
+)
+
+reply_context_strings = (
+    "'s response to %s on",
+    "'s witty rebuttal to %s on",
+    " providing additional insight to %s on",
+    " after careful thought about %s's comment on",
+    "'s careful analysis of %s's comment on",
+)
 
 yt_service = gdata.youtube.service.YouTubeService()
 
@@ -28,7 +45,7 @@ def default(request):
 
     # Add comment into to our context dictionary
     context_dict.update(comment_info)
-    context_dict["comment_context"] = get_random_comment_context_text()
+    context_dict["comment_context"] = get_random_comment_context_text(comment_info["comment_original_author"])
 
     return render_to_response('main.html',
                               context_dict,
@@ -44,7 +61,7 @@ def permalink(request, video_id, comment_id):
         raise Http404
 
     context_dict.update(comment_info)
-    context_dict["comment_context"] = get_random_comment_context_text()
+    context_dict["comment_context"] = get_random_comment_context_text(comment_info["comment_original_author"])
 
     return render_to_response('main.html',
                               context_dict,
@@ -70,16 +87,12 @@ def custom_404(request):
                               context_instance=RequestContext(request))
 
 
-def get_random_comment_context_text():
-    strings = (
-        "'s discussion on",
-        "'s insight on",
-        " discussing",
-        " on being inspired by",
-        " after carefully analyzing"
-    )
-
-    return choice(strings)
+def get_random_comment_context_text(original_author=""):
+    if(original_author == ""):
+        return choice(comment_context_strings)
+    else:
+        response = choice(reply_context_strings)
+        return response % (original_author)
 
 
 def get_random_youtube_video_info_from_feed(feed):
@@ -124,6 +137,24 @@ def get_youtube_video_info_from_entries(video_entry, comment_entry):
     comment_info["comment_author"] = get_comment_feed_entry_author(comment_entry)
     comment_info["comment_text"] = get_comment_feed_entry_content(comment_entry)
     comment_info["comment_id"] = get_comment_feed_entry_id(comment_entry)
+
+    comment_info["comment_is_response"] = False
+    comment_info["comment_original_author"] = ""
+    comment_info["comment_original_link"] = ""
+    
+    #import pdb
+    #pdb.set_trace()
+
+    comment_in_reply_to_uri = get_comment_feed_entry_in_reply_to_uri(comment_entry)
+    # If there's a reponse
+    if(comment_in_reply_to_uri != ""):
+        # Fill in the repsonse info
+        comment_info["comment_is_response"] = True
+        original_comment_entry = yt_service.GetYouTubeVideoCommentEntry(uri=comment_in_reply_to_uri)
+        comment_info["comment_original_author"] = get_comment_feed_entry_author(original_comment_entry)
+        comment_info["comment_original_link"] = "/permalink/" + \
+            comment_info["video_id"] + "/" + \
+            comment_in_reply_to_uri.split("/")[-1]
 
     return comment_info
 
@@ -176,12 +207,21 @@ def get_comment_feed_entry_id(comment_entry):
     return id
 
 
+def get_comment_feed_entry_in_reply_to_uri(comment_entry):
+    uri = ""
+    for link in comment_entry.link:
+        if(link.rel == comment_in_reply_to_link):
+            uri = link.href
+            break
+
+    return uri
+
+
 def get_comment_uri_from_ids(video_id, comment_id):
     return "http://gdata.youtube.com/feeds/api/videos/" + \
             video_id + \
             "/comments/" + \
             comment_id
-
 
 #def get_comment_author_url_from_feed_entry(comment_entry):
 #    
