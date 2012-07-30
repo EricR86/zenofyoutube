@@ -4,7 +4,7 @@ import gdata
 
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 
 import gdata.youtube
 import gdata.youtube.service
@@ -41,7 +41,13 @@ def default(request):
     context_dict = {}
 
     feed = get_most_popular_youtube_feed()
-    comment_info = get_random_youtube_video_info_from_feed(feed)
+
+    # Sometimes the video gets removed and there's no valid information for it
+    try:
+        comment_info = get_random_youtube_video_info_from_feed(feed)
+    except:
+        # If there's no info for this video, redirect to itself
+        return HttpResponseRedirect("/")
 
     # Add comment into to our context dictionary
     context_dict.update(comment_info)
@@ -75,8 +81,8 @@ def custom_404(request):
     comment_info["video_title"] = "Why can't I find this page?"
     comment_info["video_url"] = "notreallyaurl"
     comment_info["video_id"] = "404"
-    comment_info["comment_author"] = "404 Magic Man"
-    comment_info["comment_text"] = "This page doesn't exist. Seriously, this is a broken link."
+    comment_info["comment_author"] = "404"
+    comment_info["comment_text"] = "This page doesn't exist. The video may have been removed."
     comment_info["comment_id"] = "404"
 
     context_dict.update(comment_info)
@@ -100,16 +106,15 @@ def get_random_youtube_video_info_from_feed(feed):
     random_video_entry = choice(feed.entry)
 
     # Get the comment feed for the video
-    #comment_uri = get_video_feed_entry_comment_feed_uri(random_video_entry)
-    #comment_uri = comment_uri + "?" + \
-    #    comment_feed_filter_parameters + "&" + \
-    #    comment_feed_get_parameters
+    comment_uri = get_video_feed_entry_comment_feed_uri(random_video_entry)
+    comment_uri = comment_uri + "?" + \
+        comment_feed_filter_parameters + "&" + \
+        comment_feed_get_parameters
 
-    ## This crashes sometimes
-    #comment_feed = yt_service.GetYouTubeVideoCommentFeed(uri=comment_uri)
-    comment_feed = yt_service.GetYouTubeVideoCommentFeed(
-        video_id=get_video_feed_entry_id(random_video_entry)
-    )
+    comment_feed = yt_service.GetYouTubeVideoCommentFeed(uri=comment_uri)
+    #comment_feed = yt_service.GetYouTubeVideoCommentFeed(
+    #    video_id=get_video_feed_entry_id(random_video_entry)
+    #)
     random_comment_entry = choice(comment_feed.entry)
 
     return get_youtube_video_info_from_entries(random_video_entry, random_comment_entry)
