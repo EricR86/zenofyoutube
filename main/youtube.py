@@ -36,6 +36,16 @@ def get_random_video_info_from_most_popular():
     return get_youtube_video_info_from_entries(random_video_entry, random_comment_entry)
 
 
+def get_random_video_info_from_search(search_terms):
+    # Get a random video from the most popular video feed
+    random_video_entry = get_random_video_entry_from_search(search_terms)
+
+    # Get a random comment from the selected video entry
+    random_comment_entry = get_random_comment_entry_from_video_entry(random_video_entry)
+
+    return get_youtube_video_info_from_entries(random_video_entry, random_comment_entry)
+
+
 def get_video_info_from_ids(video_id, comment_id):
 
     #Get comment from URI provided in permalink
@@ -80,17 +90,26 @@ def get_youtube_video_info_from_entries(video_entry, comment_entry):
     return comment_info
 
 
-def get_random_youtube_video_info_from_search(search_terms):
+def get_random_video_entry_from_search(search_terms):
     query = "http://gdata.youtube.com/feeds/api/videos"
     query += "?" + VIDEO_FEED_FILTER_PARAMETERS
+    query += "&" + VIDEO_FEED_GET_PARAMETERS
     query += "&q=" + search_terms
-    feed = yt_service.YouTubeQuery(query)
+
+    feed = yt_service.GetYouTubeVideoFeed(query)
+
+    total_results = int(feed.total_results.text)
+
+    if total_results < 1:
+        raise gdata.youtube.service.YouTubeError("No video entries found from search")
+    
+    return choice(feed.entry)
 
 
 # Video Entry Retrieval
 def get_random_video_entry_from_feed(uri):
     # Query the number of videos from this feed
-    total_results = get_number_of_results_from_video_feed(uri)
+    #total_results = get_number_of_results_from_video_feed(uri)
     
     query = uri + "?" + VIDEO_FEED_FILTER_PARAMETERS
     query += "&" + VIDEO_FEED_GET_PARAMETERS
@@ -100,7 +119,7 @@ def get_random_video_entry_from_feed(uri):
     total_results = int(feed.total_results.text)
 
     if total_results < 1:
-        raise gdata.youtube.service.YouTubeError
+        raise gdata.youtube.service.YouTubeError("No video entries found from feed")
     
     return choice(feed.entry)
 
@@ -136,7 +155,7 @@ def get_random_comment_entry_from_video_entry(video_entry):
 
     total_results = int(comment_feed.total_results.text)
     if total_results < 1:
-        raise gdata.youtube.service.YouTubeError
+        raise gdata.youtube.service.YouTubeError("No comment entries found from video")
     #comment_feed = yt_service.GetYouTubeVideoCommentFeed(
     #    video_id=get_video_feed_entry_id(random_video_entry)
     #)

@@ -27,12 +27,11 @@ def default(request):
 
     # Sometimes the video gets removed and there's no valid information for it
     # Or comments have been disabled, etc.
-    #try:
-    #    comment_info = youtube.get_random_video_info_from_most_popular()
-    #except:
-    #    # If there's no info for this video, redirect to itself and try again
-    #    return HttpResponseRedirect("/")
-    comment_info = youtube.get_random_video_info_from_most_popular()
+    try:
+        comment_info = youtube.get_random_video_info_from_most_popular()
+    except:
+        # If there's no info for this video, redirect to itself and try again
+        return HttpResponseRedirect("/")
 
     # Add comment into to our context dictionary
     context_dict.update(comment_info)
@@ -43,24 +42,23 @@ def default(request):
                               context_instance=RequestContext(request))
 
 
-#def search(request, search_term):
-#    context_dict = {}
-#
-#    feed = get_youtube_video_search_feed(search_term)
-#
-#    # Sometimes the video gets removed and there's no valid information for it
-#    try:
-#        comment_info = get_random_youtube_video_info_from_feed(feed)
-#    except:
-#        # If there's no info for this video, redirect to itself
-#        return HttpResponseRedirect("/search/"+search_term)
-#
-#    context_dict.update(comment_info)
-#    context_dict["comment_context"] = get_random_comment_context_text(comment_info["comment_original_author"])
-#
-#    return render_to_response('main.html',
-#                              context_dict,
-#                              context_instance=RequestContext(request))
+def search(request, search_term):
+    context_dict = {}
+
+    # Sometimes the video gets removed and there's no valid information for it
+    # Or comments have been disabled, etc.
+    try:
+        comment_info = youtube.get_random_video_info_from_search(search_term)
+    except:
+        # If there's no info for this video, redirect to itself
+        return HttpResponseRedirect("/search/"+search_term)
+
+    context_dict.update(comment_info)
+    context_dict["comment_context"] = get_random_comment_context_text(comment_info["comment_original_author"])
+
+    return render_to_response('main.html',
+                              context_dict,
+                              context_instance=RequestContext(request))
 
 
 def permalink(request, video_id, comment_id):
