@@ -7,6 +7,7 @@ from django.conf.urls.defaults import patterns, include, url
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'main.views.default'),
+    url(r'^search/(.*)', 'main.views.search'),
     url(r'^permalink/(.*)/(.*)', 'main.views.permalink'),
     # url(r'^$', 'youtubeinsight.views.home', name='home'),
     # url(r'^youtubeinsight/', include('youtubeinsight.foo.urls')),
