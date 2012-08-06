@@ -42,7 +42,7 @@ a {
 }
 
 #commentBy {
-    width: 80%;
+    width: 90%;
     margin-left: auto;
     padding-top: 12px;
     padding-right: 12px;
@@ -56,8 +56,8 @@ a {
 
 #options {
     padding-top: 12px;
-    width: 60%;
-    margin: 0 auto;
+    /* width: 60%; */
+    /* margin: 0 auto; */
 }
 
 #options a {
